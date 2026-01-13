@@ -21,6 +21,8 @@ const SignIn = lazy(() => import("@/pages/SignIn"));
 const SignUp = lazy(() => import("@/pages/SignUp"));
 const UserProfile = lazy(() => import("@/pages/UserProfile"));
 const MemoDetailRedirect = lazy(() => import("./MemoDetailRedirect"));
+const TravelStories = lazy(() => import("@/pages/TravelStories"));
+const TravelStoryViewer = lazy(() => import("@/components/TravelStory/TravelStoryViewer"));
 
 import { ROUTES } from "./routes";
 
@@ -71,6 +73,8 @@ const router = createBrowserRouter([
           { path: Routes.ATTACHMENTS, element: <LazyRoute component={Attachments} /> },
           { path: Routes.INBOX, element: <LazyRoute component={Inboxes} /> },
           { path: Routes.SETTING, element: <LazyRoute component={Setting} /> },
+          { path: "stories", element: <LazyRoute component={TravelStories} /> },
+          { path: "stories/:uid", element: <LazyRoute component={TravelStoryViewer} /> },
           { path: "memos/:uid", element: <LazyRoute component={MemoDetail} /> },
           // Redirect old path to new path
           { path: "m/:uid", element: <LazyRoute component={MemoDetailRedirect} /> },

@@ -105,3 +105,28 @@ CREATE TABLE reaction (
   reaction_type TEXT NOT NULL,
   UNIQUE(creator_id, content_id, reaction_type)
 );
+
+-- travel_story
+CREATE TABLE travel_story (
+  id SERIAL PRIMARY KEY,
+  uid TEXT NOT NULL UNIQUE,
+  creator_id INTEGER NOT NULL,
+  created_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+  updated_ts BIGINT NOT NULL DEFAULT EXTRACT(EPOCH FROM NOW()),
+  title VARCHAR(512) NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT '',
+  cover_image TEXT NOT NULL DEFAULT '',
+  start_date BIGINT DEFAULT NULL,
+  end_date BIGINT DEFAULT NULL,
+  destination VARCHAR(512) NOT NULL DEFAULT '',
+  visibility VARCHAR(32) NOT NULL DEFAULT 'PRIVATE' CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')),
+  payload JSONB NOT NULL DEFAULT '{}'
+);
+
+-- travel_story_memo
+CREATE TABLE travel_story_memo (
+  travel_story_id INTEGER NOT NULL,
+  memo_id INTEGER NOT NULL,
+  display_order INTEGER NOT NULL DEFAULT 0,
+  UNIQUE(travel_story_id, memo_id)
+);

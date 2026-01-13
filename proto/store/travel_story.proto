@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package memos.store;
+
+option go_package = "gen/store";
+
+message TravelStoryPayload {
+  // The tags associated with this travel story.
+  repeated string tags = 1;
+
+  // The sections of the travel story.
+  repeated StorySection sections = 2;
+
+  // The theme/style configuration.
+  StoryTheme theme = 3;
+
+  // Story section representing a chapter or day.
+  message StorySection {
+    // The title of this section.
+    string title = 1;
+
+    // The refined content text for this section.
+    string content = 2;
+
+    // The date for this section (unix timestamp).
+    int64 date = 3;
+
+    // The location for this section.
+    string location = 4;
+
+    // The images for this section.
+    repeated StoryImage images = 5;
+
+    // The original memo UID this section was derived from.
+    string source_memo_uid = 6;
+  }
+
+  // Story image with quality metadata.
+  message StoryImage {
+    // The URL or attachment reference.
+    string url = 1;
+
+    // The caption for the image.
+    string caption = 2;
+
+    // The alt text for accessibility.
+    string alt_text = 3;
+
+    // Image quality score (0-100).
+    int32 quality_score = 4;
+
+    // Whether this image is selected for the story.
+    bool selected = 5;
+  }
+
+  // Theme configuration for the story.
+  message StoryTheme {
+    // The color scheme name.
+    string color_scheme = 1;
+
+    // The font family preference.
+    string font_family = 2;
+
+    // The layout style.
+    string layout_style = 3;
+  }
+}

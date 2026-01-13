@@ -465,5 +465,28 @@
     "select-visibility": "Visibility",
     "tags": "Tags",
     "upload-attachment": "Upload Attachment(s)"
+  },
+  "travel-story": {
+    "auto-generate": "Auto-generate from memos",
+    "auto-refine": "Automatically refine content and select best photos",
+    "create": "Create Story",
+    "created-description": "Your travel story has been created and is ready to share.",
+    "created-title": "Story Created!",
+    "description-placeholder": "A brief description of your journey...",
+    "generate-description": "Turn your selected memos into a beautiful shareable travel journal.",
+    "generate-story": "Generate Story",
+    "generate-title": "Generate Travel Story",
+    "generating": "Generating...",
+    "memos-included": "memos included",
+    "memos-selected": "memos selected",
+    "select-memos": "Select Memos",
+    "selected": "selected",
+    "theme": "Theme",
+    "theme-forest": "Forest Green",
+    "theme-minimal": "Minimal",
+    "theme-ocean": "Ocean Blue",
+    "theme-sunset": "Sunset Orange",
+    "title-placeholder": "My Amazing Trip",
+    "view-story": "View Story"
   }
 }

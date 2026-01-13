@@ -1,0 +1,346 @@
+syntax = "proto3";
+
+package memos.api.v1;
+
+import "api/v1/memo_service.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/api/resource.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v1";
+
+service TravelStoryService {
+  // CreateTravelStory creates a travel story from selected memos.
+  rpc CreateTravelStory(CreateTravelStoryRequest) returns (TravelStory) {
+    option (google.api.http) = {
+      post: "/api/v1/travelStories"
+      body: "*"
+    };
+  }
+
+  // GetTravelStory gets a travel story by name.
+  rpc GetTravelStory(GetTravelStoryRequest) returns (TravelStory) {
+    option (google.api.http) = {get: "/api/v1/{name=travelStories/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // ListTravelStories lists travel stories for the current user.
+  rpc ListTravelStories(ListTravelStoriesRequest) returns (ListTravelStoriesResponse) {
+    option (google.api.http) = {get: "/api/v1/travelStories"};
+  }
+
+  // UpdateTravelStory updates a travel story.
+  rpc UpdateTravelStory(UpdateTravelStoryRequest) returns (TravelStory) {
+    option (google.api.http) = {
+      patch: "/api/v1/{travel_story.name=travelStories/*}"
+      body: "travel_story"
+    };
+  }
+
+  // DeleteTravelStory deletes a travel story.
+  rpc DeleteTravelStory(DeleteTravelStoryRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {delete: "/api/v1/{name=travelStories/*}"};
+    option (google.api.method_signature) = "name";
+  }
+
+  // DetectTrips analyzes memos to detect potential trips based on tags, dates, and content.
+  rpc DetectTrips(DetectTripsRequest) returns (DetectTripsResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/travelStories:detectTrips"
+      body: "*"
+    };
+  }
+
+  // GenerateStoryContent generates refined content for a travel story.
+  rpc GenerateStoryContent(GenerateStoryContentRequest) returns (GenerateStoryContentResponse) {
+    option (google.api.http) = {
+      post: "/api/v1/travelStories:generateContent"
+      body: "*"
+    };
+  }
+
+  // ExportTravelStory exports a travel story as HTML or PDF.
+  rpc ExportTravelStory(ExportTravelStoryRequest) returns (ExportTravelStoryResponse) {
+    option (google.api.http) = {get: "/api/v1/{name=travelStories/*}:export"};
+  }
+}
+
+// TravelStory represents a curated travel journal page.
+message TravelStory {
+  option (google.api.resource) = {
+    type: "memos.api.v1/TravelStory"
+    pattern: "travelStories/{travel_story}"
+    name_field: "name"
+    singular: "travelStory"
+    plural: "travelStories"
+  };
+
+  // The resource name of the travel story.
+  // Format: travelStories/{travel_story}
+  string name = 1 [(google.api.field_behavior) = IDENTIFIER];
+
+  // The creator of the travel story.
+  // Format: users/{user}
+  string creator = 2 [
+    (google.api.field_behavior) = OUTPUT_ONLY,
+    (google.api.resource_reference) = {type: "memos.api.v1/User"}
+  ];
+
+  // The title of the travel story.
+  string title = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // The description/subtitle of the travel story.
+  string description = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // The cover image URL for the travel story.
+  string cover_image = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // The start date of the trip.
+  google.protobuf.Timestamp start_date = 6 [(google.api.field_behavior) = OPTIONAL];
+
+  // The end date of the trip.
+  google.protobuf.Timestamp end_date = 7 [(google.api.field_behavior) = OPTIONAL];
+
+  // The destination/location of the trip.
+  string destination = 8 [(google.api.field_behavior) = OPTIONAL];
+
+  // The tags associated with this travel story.
+  repeated string tags = 9 [(google.api.field_behavior) = OPTIONAL];
+
+  // The sections of the travel story.
+  repeated StorySection sections = 10 [(google.api.field_behavior) = OPTIONAL];
+
+  // The theme/style for the travel story page.
+  StoryTheme theme = 11 [(google.api.field_behavior) = OPTIONAL];
+
+  // The visibility of the travel story.
+  Visibility visibility = 12 [(google.api.field_behavior) = REQUIRED];
+
+  // Output only. The creation timestamp.
+  google.protobuf.Timestamp create_time = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Output only. The last update timestamp.
+  google.protobuf.Timestamp update_time = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // The source memo names included in this story.
+  // Format: memos/{memo}
+  repeated string source_memos = 15 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// StorySection represents a section/chapter in the travel story.
+message StorySection {
+  // The title of this section.
+  string title = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // The refined content text for this section.
+  string content = 2 [(google.api.field_behavior) = REQUIRED];
+
+  // The date for this section.
+  google.protobuf.Timestamp date = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // The location for this section.
+  string location = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // The images for this section.
+  repeated StoryImage images = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // The original memo name this section was derived from.
+  // Format: memos/{memo}
+  string source_memo = 6 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// StoryImage represents an image in the travel story.
+message StoryImage {
+  // The URL or attachment reference.
+  string url = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The caption for the image.
+  string caption = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // The alt text for accessibility.
+  string alt_text = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Image quality score (0-100). Higher is better.
+  int32 quality_score = 4 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  // Whether this image is selected for the story.
+  bool selected = 5 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// StoryTheme defines the visual style of the travel story.
+message StoryTheme {
+  // The color scheme name (e.g., "ocean", "sunset", "forest", "minimal").
+  string color_scheme = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // The font family preference.
+  string font_family = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // The layout style (e.g., "magazine", "timeline", "gallery", "minimal").
+  string layout_style = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+// DetectedTrip represents a group of memos identified as belonging to the same trip.
+message DetectedTrip {
+  // Suggested title for the trip.
+  string suggested_title = 1;
+
+  // Detected destination.
+  string destination = 2;
+
+  // Start date of the trip.
+  google.protobuf.Timestamp start_date = 3;
+
+  // End date of the trip.
+  google.protobuf.Timestamp end_date = 4;
+
+  // Common tags across the memos.
+  repeated string tags = 5;
+
+  // The memos that belong to this trip.
+  repeated Memo memos = 6;
+
+  // Confidence score (0-100) for this trip detection.
+  int32 confidence = 7;
+}
+
+message CreateTravelStoryRequest {
+  // The title for the travel story.
+  string title = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional description.
+  string description = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // The memo names to include in this story.
+  // Format: memos/{memo}
+  repeated string memo_names = 3 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional theme configuration.
+  StoryTheme theme = 4 [(google.api.field_behavior) = OPTIONAL];
+
+  // The visibility of the travel story.
+  Visibility visibility = 5 [(google.api.field_behavior) = OPTIONAL];
+
+  // Whether to auto-generate refined content.
+  bool auto_generate_content = 6 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message GetTravelStoryRequest {
+  // The resource name of the travel story.
+  // Format: travelStories/{travel_story}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/TravelStory"}
+  ];
+}
+
+message ListTravelStoriesRequest {
+  // Optional. The maximum number of stories to return.
+  int32 page_size = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. A page token for pagination.
+  string page_token = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Filter by visibility.
+  Visibility visibility = 3 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message ListTravelStoriesResponse {
+  // The list of travel stories.
+  repeated TravelStory travel_stories = 1;
+
+  // A token for the next page of results.
+  string next_page_token = 2;
+}
+
+message UpdateTravelStoryRequest {
+  // The travel story to update.
+  TravelStory travel_story = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // The fields to update.
+  google.protobuf.FieldMask update_mask = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+message DeleteTravelStoryRequest {
+  // The resource name of the travel story to delete.
+  // Format: travelStories/{travel_story}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/TravelStory"}
+  ];
+}
+
+message DetectTripsRequest {
+  // Optional. Filter memos by tags.
+  repeated string tags = 1 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Start date range for detection.
+  google.protobuf.Timestamp start_date = 2 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. End date range for detection.
+  google.protobuf.Timestamp end_date = 3 [(google.api.field_behavior) = OPTIONAL];
+
+  // Optional. Minimum number of memos to form a trip.
+  int32 min_memo_count = 4 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message DetectTripsResponse {
+  // The detected trips.
+  repeated DetectedTrip trips = 1;
+}
+
+message GenerateStoryContentRequest {
+  // The memo names to generate content from.
+  // Format: memos/{memo}
+  repeated string memo_names = 1 [(google.api.field_behavior) = REQUIRED];
+
+  // Optional. The title context for content generation.
+  string title_context = 2 [(google.api.field_behavior) = OPTIONAL];
+}
+
+message GenerateStoryContentResponse {
+  // The generated sections.
+  repeated StorySection sections = 1;
+
+  // Suggested cover image URL.
+  string suggested_cover_image = 2;
+
+  // Suggested title if not provided.
+  string suggested_title = 3;
+
+  // Detected destination.
+  string detected_destination = 4;
+}
+
+message ExportTravelStoryRequest {
+  // The resource name of the travel story.
+  // Format: travelStories/{travel_story}
+  string name = 1 [
+    (google.api.field_behavior) = REQUIRED,
+    (google.api.resource_reference) = {type: "memos.api.v1/TravelStory"}
+  ];
+
+  // The export format.
+  ExportFormat format = 2 [(google.api.field_behavior) = REQUIRED];
+}
+
+enum ExportFormat {
+  EXPORT_FORMAT_UNSPECIFIED = 0;
+  HTML = 1;
+  PDF = 2;
+  IMAGE = 3;
+}
+
+message ExportTravelStoryResponse {
+  // The exported content as bytes.
+  bytes content = 1;
+
+  // The content type (e.g., "text/html", "application/pdf", "image/png").
+  string content_type = 2;
+
+  // Suggested filename for download.
+  string filename = 3;
+}

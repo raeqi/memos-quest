@@ -105,3 +105,28 @@ CREATE TABLE `reaction` (
   `reaction_type` VARCHAR(256) NOT NULL,
   UNIQUE(`creator_id`,`content_id`,`reaction_type`)  
 );
+
+-- travel_story
+CREATE TABLE `travel_story` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `uid` VARCHAR(256) NOT NULL UNIQUE,
+  `creator_id` INT NOT NULL,
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `title` VARCHAR(512) NOT NULL DEFAULT '',
+  `description` TEXT NOT NULL,
+  `cover_image` TEXT NOT NULL,
+  `start_date` BIGINT DEFAULT NULL,
+  `end_date` BIGINT DEFAULT NULL,
+  `destination` VARCHAR(512) NOT NULL DEFAULT '',
+  `visibility` VARCHAR(32) NOT NULL DEFAULT 'PRIVATE',
+  `payload` JSON NOT NULL
+);
+
+-- travel_story_memo
+CREATE TABLE `travel_story_memo` (
+  `travel_story_id` INT NOT NULL,
+  `memo_id` INT NOT NULL,
+  `display_order` INT NOT NULL DEFAULT 0,
+  UNIQUE(`travel_story_id`,`memo_id`)
+);
