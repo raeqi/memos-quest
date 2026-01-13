@@ -2,6 +2,7 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import { BookmarkIcon, EyeOffIcon, MessageCircleMoreIcon } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { MemoSelectionCheckbox } from "@/components/TravelStory";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import i18n from "@/i18n";
 import { cn } from "@/lib/utils";
@@ -44,6 +45,7 @@ const MemoHeader: React.FC<MemoHeaderProps> = ({
   return (
     <div className="w-full flex flex-row justify-between items-center gap-2">
       <div className="w-auto max-w-[calc(100%-8rem)] grow flex flex-row justify-start items-center">
+        <MemoSelectionCheckbox memo={memo} className="mr-2 shrink-0" />
         {showCreator && creator ? (
           <CreatorDisplay creator={creator} displayTime={displayTime} onGotoDetail={onGotoDetail} />
         ) : (

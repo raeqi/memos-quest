@@ -106,3 +106,28 @@ CREATE TABLE reaction (
   reaction_type TEXT NOT NULL,
   UNIQUE(creator_id, content_id, reaction_type)
 );
+
+-- travel_story
+CREATE TABLE travel_story (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  uid TEXT NOT NULL UNIQUE,
+  creator_id INTEGER NOT NULL,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  title TEXT NOT NULL DEFAULT '',
+  description TEXT NOT NULL DEFAULT '',
+  cover_image TEXT NOT NULL DEFAULT '',
+  start_date BIGINT,
+  end_date BIGINT,
+  destination TEXT NOT NULL DEFAULT '',
+  visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')) DEFAULT 'PRIVATE',
+  payload TEXT NOT NULL DEFAULT '{}'
+);
+
+-- travel_story_memo
+CREATE TABLE travel_story_memo (
+  travel_story_id INTEGER NOT NULL,
+  memo_id INTEGER NOT NULL,
+  display_order INTEGER NOT NULL DEFAULT 0,
+  UNIQUE(travel_story_id, memo_id)
+);

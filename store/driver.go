@@ -67,4 +67,13 @@ type Driver interface {
 	ListReactions(ctx context.Context, find *FindReaction) ([]*Reaction, error)
 	GetReaction(ctx context.Context, find *FindReaction) (*Reaction, error)
 	DeleteReaction(ctx context.Context, delete *DeleteReaction) error
+
+	// TravelStory model related methods.
+	CreateTravelStory(ctx context.Context, create *TravelStory) (*TravelStory, error)
+	ListTravelStories(ctx context.Context, find *FindTravelStory) ([]*TravelStory, error)
+	UpdateTravelStory(ctx context.Context, update *UpdateTravelStory) error
+	DeleteTravelStory(ctx context.Context, delete *DeleteTravelStory) error
+	UpsertTravelStoryMemo(ctx context.Context, upsert *TravelStoryMemo) (*TravelStoryMemo, error)
+	ListTravelStoryMemos(ctx context.Context, travelStoryID int32) ([]*TravelStoryMemo, error)
+	DeleteTravelStoryMemos(ctx context.Context, travelStoryID int32) error
 }
