@@ -20,7 +20,7 @@ const MemoExplorerDrawer = (props: Props) => {
 
   useEffect(() => {
     setOpen(false);
-  }, [location.pathname]);
+  }, [location]);
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
