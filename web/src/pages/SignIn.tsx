@@ -20,6 +20,9 @@ const SignIn = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
+  const [isLoadingIdentityProviders, setIsLoadingIdentityProviders] = useState(false);
+  const [identityProvidersLoaded, setIdentityProvidersLoaded] = useState(false);
+  const [signingInProviderName, setSigningInProviderName] = useState<string>("");
   const { generalSetting: instanceGeneralSetting } = useInstance();
 
   // Redirect to root page if already signed in.
@@ -32,13 +35,25 @@ const SignIn = () => {
   // Prepare identity provider list.
   useEffect(() => {
     const fetchIdentityProviderList = async () => {
-      const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
-      setIdentityProviderList(identityProviders);
+      setIsLoadingIdentityProviders(true);
+      try {
+        const { identityProviders } = await identityProviderServiceClient.listIdentityProviders({});
+        setIdentityProviderList(identityProviders);
+      } catch (error) {
+        handleError(error, toast.error, {
+          context: "Failed to load identity providers",
+          fallbackMessage: "Failed to load sign-in providers. You can still use password sign-in.",
+        });
+      } finally {
+        setIdentityProvidersLoaded(true);
+        setIsLoadingIdentityProviders(false);
+      }
     };
     fetchIdentityProviderList();
   }, []);
 
   const handleSignInWithIdentityProvider = async (identityProvider: IdentityProvider) => {
+    setSigningInProviderName(identityProvider.name);
     if (identityProvider.type === IdentityProvider_Type.OAUTH2) {
       const redirectUri = absolutifyLink("/auth/callback");
       const oauth2Config = identityProvider.config?.config?.case === "oauth2Config" ? identityProvider.config.config.value : undefined;
@@ -63,6 +78,7 @@ const SignIn = () => {
 
         window.location.href = authUrl;
       } catch (error) {
+        setSigningInProviderName("");
         handleError(error, toast.error, {
           context: "Failed to initiate OAuth flow",
           fallbackMessage: "Failed to initiate sign-in. Please try again.",
@@ -81,8 +97,10 @@ const SignIn = () => {
         {!instanceGeneralSetting.disallowPasswordAuth ? (
           <PasswordSignInForm />
         ) : (
+          identityProvidersLoaded &&
           identityProviderList.length === 0 && <p className="w-full text-2xl mt-2 text-muted-foreground">Password auth is not allowed.</p>
         )}
+        {isLoadingIdentityProviders && <p className="w-full mt-3 text-sm text-muted-foreground">Loading sign-in providers...</p>}
         {!instanceGeneralSetting.disallowUserRegistration && !instanceGeneralSetting.disallowPasswordAuth && (
           <p className="w-full mt-4 text-sm">
             <span className="text-muted-foreground">{t("auth.sign-up-tip")}</span>
@@ -107,9 +125,12 @@ const SignIn = () => {
                   className="bg-background w-full"
                   key={identityProvider.name}
                   variant="outline"
+                  disabled={Boolean(signingInProviderName)}
                   onClick={() => handleSignInWithIdentityProvider(identityProvider)}
                 >
-                  {t("common.sign-in-with", { provider: identityProvider.title })}
+                  {signingInProviderName === identityProvider.name
+                    ? `Signing in with ${identityProvider.title}...`
+                    : t("common.sign-in-with", { provider: identityProvider.title })}
                 </Button>
               ))}
             </div>
