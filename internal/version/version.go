@@ -35,7 +35,7 @@ func GetMinorVersion(version string) string {
 
 // IsVersionGreaterOrEqualThan returns true if version is greater than or equal to target.
 func IsVersionGreaterOrEqualThan(version, target string) bool {
-	return semver.Compare(fmt.Sprintf("v%s", version), fmt.Sprintf("v%s", target)) > -1
+	return semver.Compare(fmt.Sprintf("v%s", version), fmt.Sprintf("v%s", target)) >= 0
 }
 
 // IsVersionGreaterThan returns true if version is greater than target.
